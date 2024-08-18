@@ -49,9 +49,10 @@ class App:
         window.bind('<space>', self.spazio)
         window.bind('<Return>', self.enter)
 
-        ico = Image.open('logo.jpg')
-        photo = ImageTk.PhotoImage(ico)
-        root.wm_iconphoto(False, photo)
+        ico = PIL.Image.open('logo.jpg')
+        resized_image= ico.resize((256,256), PIL.Image.LANCZOS)
+        photo = PIL.ImageTk.PhotoImage(resized_image)
+        window.wm_iconphoto(False, photo)
 
         toolbar = tkinter.Frame(window, bd=1, relief=tkinter.RAISED)
         label = tkinter.Label(toolbar, text='Webcam ')

@@ -497,7 +497,6 @@ class App:
         self.refresh_data()
 
     def backward(self):
-        fingers[i].size
         self.timeposition -= 5
         if self.timeposition < -15:
             self.timeposition = -15

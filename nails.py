@@ -44,6 +44,8 @@ class App:
         self.timeposition = -15 #this variable to manage the position of plots
         self.updateViaTimer = False
 
+        self.reset_nails_images()
+
         self.vid = MyVideoCapture()
 
         window.bind('<space>', self.spazio)
@@ -79,7 +81,7 @@ class App:
         self.sliderthreshold.set(70)
         frame.pack()
 
-        # Frame for nails area
+        # Frame for nails area left
         self.framenail = tkinter.Frame(window)
         #framenail.grid_configure(0, weight=1, uniform="fred")
         w = self.vid.width
@@ -87,27 +89,27 @@ class App:
         image = PIL.Image.open('current.jpg') #TODO
         image = image.resize((int(w/5), int(h/5)))
         self.snapshot_size = (int(w/5), int(h/5))
-        python_image = PIL.ImageTk.PhotoImage(image)
+        logo_for_nails = PIL.ImageTk.PhotoImage(image)
 
-        # pictures inside the frame
+        # pictures inside the frame, 7 images
         self.measvar = [tkinter.StringVar() for i in range(0,7)]
         self.meas = []
         self.label = []
         for i in range(0,7):
             dummy = tkinter.Frame(self.framenail)
-            self.label.append( tkinter.Label(dummy, image=python_image, height=100) )
+            self.label.append( tkinter.Label(dummy, image=logo_for_nails, height=100) )
             self.label[i].pack(side=tkinter.TOP)
             self.meas.append(tkinter.Label(dummy, textvariable=self.measvar[i]))
             self.meas[i].pack(side=tkinter.TOP)
             dummy.pack(side=tkinter.LEFT, fill='x', ipadx=20)
         self.framenail.pack(expand=True)
-        empty = np.zeros((int(python_image.height()/2), int(python_image.width()/2)))
+        empty = np.zeros((int(logo_for_nails.height()/2), int(logo_for_nails.width()/2)))
         photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(empty))
         self.label[5].configure(image=photo)
         self.label[5].image = photo
         self.measvar[5].set("Black")
         self.label[6].configure(image=photo)
-        self.label[5].image = photo
+        self.label[6].image = photo
         self.measvar[6].set("White")
 
         # Button that lets the user take a snapshot
@@ -180,6 +182,19 @@ class App:
 
         self.window.mainloop()
 
+
+    def reset_nails_images(self):
+        os.system('cp original.jpg current.jpg')
+        if hasattr(self, 'label'):
+            w = self.vid.width
+            h = self.vid.height
+            image = PIL.Image.open('current.jpg')
+            image = image.resize((int(w / 5), int(h / 5)))
+            photo = PIL.ImageTk.PhotoImage(image)
+            for idx in range(0,5):
+                self.label[idx].configure(image=photo)
+                self.label[idx].image = photo
+                self.measvar[idx].set("")
 
     def eventhandler(self, evt):
         print('Event Thread', threading.get_ident())  # event thread id (same as main)
@@ -412,6 +427,7 @@ class App:
     def delete_samples(self):
         if os.path.exists(self.DATAFILE):
             os.remove(self.DATAFILE)
+        self.reset_nails_images()
         self.refresh_data()
 
 

@@ -358,10 +358,9 @@ class App:
         fingers = self.divide_data()
         self.maxtimeposition = -100
         for i in range(0,5):
-            print(fingers[i].size)
+            print(fingers[i].shape[0])
             if fingers[i].size > self.maxtimeposition:
-                self.maxtimeposition = fingers[i].size
-            #TODO da fare qui
+                self.maxtimeposition = fingers[i].shape[0]
 
         self.livius_normalize(fingers)
 
@@ -494,12 +493,15 @@ class App:
 
     def forward(self):
         self.timeposition += 5
+        print(self.timeposition)
+        if self.timeposition >= 0:
+            self.timeposition -= 5
         self.refresh_data()
 
     def backward(self):
         self.timeposition -= 5
-        if self.timeposition < -15:
-            self.timeposition = -15
+        if self.timeposition < -self.maxtimeposition:
+            self.timeposition = -self.maxtimeposition
         self.refresh_data()
 
     #this function saves the image in current.jpg

@@ -347,6 +347,7 @@ class App:
         self.plotG = self.fig.add_subplot(132)
         self.plotB = self.fig.add_subplot(133)
 
+        #if data.csv is not present
         if not self.load_data():
             self.histcanvas.draw_idle() #refresh if called after delete
             return
@@ -365,6 +366,8 @@ class App:
         self.plotR.legend(labels=['1','2','3','4','5'])
         self.plotR.set_ylim([0, 1])
         self.plotR.set_ylabel('dark          clear')
+        l, r = self.plotR.get_xlim()
+        self.plotR.set_xlim(r-15, r)
 
         for i in range(0, 5):
             if fingers[i].size == 0:
@@ -374,6 +377,8 @@ class App:
         self.plotG.legend(labels=['1', '2', '3', '4', '5'])
         self.plotG.set_ylim([0, 1])
         self.plotG.set_ylabel('dark          clear')
+        l, r = self.plotG.get_xlim()
+        self.plotG.set_xlim(r-15, r)
 
         for i in range(0, 5):
             if fingers[i].size == 0:
@@ -383,6 +388,8 @@ class App:
         self.plotB.legend(labels=['1', '2', '3', '4', '5'])
         self.plotB.set_ylim([0, 1])
         self.plotB.set_ylabel('dark          clear')
+        l, r = self.plotB.get_xlim()
+        self.plotB.set_xlim(r-15, r)
 
         self.histcanvas.draw_idle()
 
@@ -482,6 +489,8 @@ class App:
 
     def backward(self):
         self.timeposition -= 5
+        if self.timeposition < -15:
+            self.timeposition = -15
         self.refresh_data()
 
     #this function saves the image in current.jpg

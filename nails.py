@@ -344,8 +344,11 @@ class App:
         self.fig.clear()
 
         self.plotR = self.fig.add_subplot(131)
+        self.plotR.set_title("Red")
         self.plotG = self.fig.add_subplot(132)
+        self.plotG.set_title("Green")
         self.plotB = self.fig.add_subplot(133)
+        self.plotB.set_title("Blue")
 
         #if data.csv is not present
         if not self.load_data():
@@ -353,6 +356,12 @@ class App:
             return
 
         fingers = self.divide_data()
+        self.maxtimeposition = -100
+        for i in range(0,5):
+            print(fingers[i].size)
+            if fingers[i].size > self.maxtimeposition:
+                self.maxtimeposition = fingers[i].size
+            #TODO da fare qui
 
         self.livius_normalize(fingers)
 
@@ -488,6 +497,7 @@ class App:
         self.refresh_data()
 
     def backward(self):
+        fingers[i].size
         self.timeposition -= 5
         if self.timeposition < -15:
             self.timeposition = -15

@@ -15,6 +15,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
                                                NavigationToolbar2Tk)
 
+from alertplot import AlertPlot
 from camerasearch import CameraSearch
 from myvideocapture import MyVideoCapture
 from myprocessing import MyProcessing
@@ -33,6 +34,8 @@ class App:
     DEFAULT_REPETITIONS = 5
     
     DATAFILE = 'data.csv'
+
+    EMPTYRECT = [0, 0, 1]
 
     def __init__(self, window, window_title, video_source=0):
         self.flagSnaphot = False
@@ -163,9 +166,15 @@ class App:
         self.histcanvas.get_tk_widget().pack(side=tkinter.LEFT, fill=tkinter.X, expand=True)
         # -----------plot
 
+        #alert plot
+        self.alarm = AlertPlot(self.history)
+        self.alarm.pack(side=tkinter.LEFT, fill=tkinter.X)
+
         self.btn_forward = tkinter.Button(self.history, text="FORW", command=self.forward)
         self.btn_forward.pack(side=tkinter.LEFT, fill=tkinter.Y)
+
         self.history.pack(fill=tkinter.X)
+
 
         self.get_available_cameras()
         # open video source (by default this will try to open the computer webcam)
@@ -400,6 +409,16 @@ class App:
         self.plotB.set_xlim(r-15, r)
 
         self.histcanvas.draw_idle()
+
+        #update alert box
+        for k in range(1, 16):
+            elem = []
+            for i in range(0, 5):
+                if fingers[i].size == 0:
+                    elem.append(self.EMPTYRECT)
+                else:
+                    elem.append(fingers[i][pos:, 2:5][-1])
+            self.alarm.appendColumn(elem)
 
 
     def livius_normalize(self, fingers):

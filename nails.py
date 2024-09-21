@@ -371,6 +371,7 @@ class App:
             if fingers[i].size > self.maxtimeposition:
                 self.maxtimeposition = fingers[i].shape[0]
 
+        #normalize finger values with respect to black and white
         self.livius_normalize(fingers)
 
         pos = self.timeposition
@@ -417,7 +418,11 @@ class App:
                 if fingers[i].size == 0:
                     elem.append(self.EMPTYRECT)
                 else:
-                    elem.append(fingers[i][pos:, 2:5][-1])
+                    m = fingers[i][pos:, 2:5].shape[0]
+                    if k <= m:
+                        elem.append(fingers[i][pos:, 2:5][-k])
+                    else:
+                        elem.append(self.EMPTYRECT)
             self.alarm.appendColumn(elem)
 
 

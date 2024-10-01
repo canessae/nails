@@ -5,7 +5,7 @@ from matplotlib.backends.backend_tkagg import ( FigureCanvasTkAgg )
 from matplotlib.figure import Figure
 
 class AlertPlot(tk.Frame):
-    def __init__(self, root, w = 15, h = 5, hideaxes = True):
+    def __init__(self, root, w = 15, h = 5, hideaxes = False):
         tk.Frame.__init__(self, root)
         self.w = w
         self.h = h
@@ -25,12 +25,14 @@ class AlertPlot(tk.Frame):
         #show or hide axes plot
         self.hideAxis(self.hideaxes)
         self.ax.set_xlim([0, self.w])
-        self.ax.set_ylim([0, self.h])
+        self.ax.set_xticks([])
+        self.ax.set_ylim([0+0.5, self.h+0.5])
+        self.ax.set_ylabel('teeth')
         x = 0
         y = 0
         for col in gridValues:
             for sample in col:
-                self.ax.add_patch(Rectangle((x, y), 1, 1, color=sample))
+                self.ax.add_patch(Rectangle((x, y+0.5), 1, 1, color=sample))
                 y += 1
             x += 1
             y = 0
@@ -42,6 +44,9 @@ class AlertPlot(tk.Frame):
             index = self.currentGrid[0]
             self.currentGrid.remove(index)
         self.display(self.currentGrid)
+
+    def clearGridData(self):
+        self.currentGrid = []
 
     def hideAxis(self, s : bool):
         if s:
@@ -67,7 +72,7 @@ if __name__ == "__main__":
     grid.append([[1, 0, 0], [0, 1, 0], [0, 0, 0], [0.3, 0.2, .5]])
     grid.append([[1, 1, 1], [1, 1, 0]])
 
-    alert = AlertPlot(root, 10,4)
+    alert = AlertPlot(root, 10, 4)
     alert.pack(side=tk.TOP)
     button = tk.Button(root, text = "premi", command=clicked)
     button.pack(side=tk.TOP)

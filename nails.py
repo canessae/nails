@@ -1,8 +1,10 @@
 import csv
 import os
+import sys
 import threading
 import time
 import tkinter
+from signal import alarm
 from tkinter import ttk
 import cv2
 import PIL
@@ -35,7 +37,7 @@ class App:
     
     DATAFILE = 'data.csv'
 
-    EMPTYRECT = [0, 0, 1]
+    EMPTYRECT = [0, 0, 0, 0]
 
     def __init__(self, window, window_title, video_source=0):
         self.flagSnaphot = False
@@ -365,10 +367,11 @@ class App:
             return
 
         fingers = self.divide_data()
+
         self.maxtimeposition = -100
-        for i in range(0,5):
-            print(fingers[i].shape[0])
-            if fingers[i].size > self.maxtimeposition:
+        for i in range(0, 5):
+            print(f'calcolo maxtimeposition {fingers[i].shape[0]}')
+            if fingers[i].shape[0] > self.maxtimeposition:
                 self.maxtimeposition = fingers[i].shape[0]
 
         #normalize finger values with respect to black and white
@@ -379,7 +382,7 @@ class App:
         for i in range(0, 5):
             if fingers[i].size == 0:
                 continue
-            self.plotR.plot(fingers[i][pos:,0][:15], fingers[i][pos:, 2][:15], symbols[i])
+            self.plotR.plot(fingers[i][pos:, 0][:15], fingers[i][pos:, 2][:15], symbols[i])
         self.plotR.grid(True)
         self.plotR.legend(labels=['1','2','3','4','5'])
         self.plotR.set_ylim([0, 1])
@@ -390,7 +393,7 @@ class App:
         for i in range(0, 5):
             if fingers[i].size == 0:
                 continue
-            self.plotG.plot(fingers[i][pos:,0][:15], fingers[i][pos:, 3][:15], symbols[i])
+            self.plotG.plot(fingers[i][pos:, 0][:15], fingers[i][pos:, 3][:15], symbols[i])
         self.plotG.grid(True)
         self.plotG.legend(labels=['1', '2', '3', '4', '5'])
         self.plotG.set_ylim([0, 1])
@@ -401,7 +404,7 @@ class App:
         for i in range(0, 5):
             if fingers[i].size == 0:
                 continue
-            self.plotB.plot(fingers[i][pos:,0][:15], fingers[i][pos:, 4][:15], symbols[i])
+            self.plotB.plot(fingers[i][pos:, 0][:15], fingers[i][pos:, 4][:15], symbols[i])
         self.plotB.grid(True)
         self.plotB.legend(labels=['1', '2', '3', '4', '5'])
         self.plotB.set_ylim([0, 1])
@@ -412,19 +415,41 @@ class App:
         self.histcanvas.draw_idle()
 
         #update alert box
-        for k in range(1, 16):
+        self.alarm.clearGridData()
+        keys = ['finger1', 'finger2', 'finger3', 'finger4', 'finger5']
+        for item in self.current_data[pos:]:
+            print(item)
             elem = []
-            for i in range(0, 5):
-                if fingers[i].size == 0:
+            for key in keys:
+                if item[key] == '':
                     elem.append(self.EMPTYRECT)
                 else:
-                    m = fingers[i][pos:, 2:5].shape[0]
-                    if k <= m:
-                        elem.append(fingers[i][pos:, 2:5][-k])
-                    else:
-                        elem.append(self.EMPTYRECT)
+                    tmp = item['black'][1:-1].split()
+                    black = np.array([float(tmp[0]), float(tmp[1]), float(tmp[2])])
+                    tmp = item['white'][1:-1].split()
+                    white = np.array([float(tmp[0]), float(tmp[1]), float(tmp[2])])
+                    tmp = item[key][1:-1].split()
+                    item_n = np.array([float(tmp[0]), float(tmp[1]), float(tmp[2])])
+                    item_n = ((item_n - black) / (white - black)).clip(0,1)
+                    elem.append(item_n)
             self.alarm.appendColumn(elem)
 
+        # for k in range(1, 16):
+        #     elem = []
+        #     for i in range(0, 5):
+        #         if fingers[i].size == 0:
+        #             elem.append(self.EMPTYRECT)
+        #         else:
+        #             m = fingers[i][pos:, 2:5].shape[0]
+        #             print(f'k = {k}')
+        #             if k <= m:
+        #                 elem.append(fingers[i][pos:, 2:5][-k])
+        #                 print(f'{k} - {i}')
+        #                 print(fingers[i][pos:, 2:5][-k])
+        #             else:
+        #                 elem.append(self.EMPTYRECT)
+        #     print(f'elem = {elem}')
+        #     self.alarm.appendColumn(elem)
 
     def livius_normalize(self, fingers):
         for i in range(0, 5):
@@ -517,13 +542,14 @@ class App:
 
     def forward(self):
         self.timeposition += 5
-        print(self.timeposition)
+        print(f'timeposition {self.timeposition}')
         if self.timeposition >= 0:
             self.timeposition -= 5
         self.refresh_data()
 
     def backward(self):
         self.timeposition -= 5
+        print(f'timeposition {self.timeposition}/{self.maxtimeposition}')
         if self.timeposition < -self.maxtimeposition:
             self.timeposition = -self.maxtimeposition
         self.refresh_data()

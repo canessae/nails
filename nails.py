@@ -169,8 +169,8 @@ class App:
         # -----------plot
 
         #alert plot
-        self.alarm = AlertPlot(self.history)
-        self.alarm.pack(side=tkinter.LEFT, fill=tkinter.X)
+        self.alerthistory = AlertPlot(self.history)
+        self.alerthistory.pack(side=tkinter.LEFT, fill=tkinter.X)
 
         self.btn_forward = tkinter.Button(self.history, text="FORW", command=self.forward)
         self.btn_forward.pack(side=tkinter.LEFT, fill=tkinter.Y)
@@ -415,9 +415,10 @@ class App:
         self.histcanvas.draw_idle()
 
         #update alert box
-        self.alarm.clearGridData()
+        self.alerthistory.clearGridData()
         keys = ['finger1', 'finger2', 'finger3', 'finger4', 'finger5']
-        for item in self.current_data[pos:]:
+        print(f'pos = {pos} {len(self.current_data[pos:])}')
+        for item in self.current_data[pos:][0:15]:
             print(item)
             elem = []
             for key in keys:
@@ -432,7 +433,7 @@ class App:
                     item_n = np.array([float(tmp[0]), float(tmp[1]), float(tmp[2])])
                     item_n = ((item_n - black) / (white - black)).clip(0,1)
                     elem.append(item_n)
-            self.alarm.appendColumn(elem)
+            self.alerthistory.appendColumn(elem)
 
         # for k in range(1, 16):
         #     elem = []
@@ -492,6 +493,8 @@ class App:
         if os.path.exists(self.DATAFILE):
             os.remove(self.DATAFILE)
         self.reset_nails_images()
+        self.alerthistory.clearGridData()
+        self.alerthistory.display([])
         self.refresh_data()
 
 

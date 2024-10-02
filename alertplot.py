@@ -27,7 +27,7 @@ class AlertPlot(tk.Frame):
         self.ax.set_xlim([0, self.w])
         self.ax.set_xticks([])
         self.ax.set_ylim([0+0.5, self.h+0.5])
-        self.ax.set_ylabel('teeth')
+        self.ax.set_ylabel('finger')
         x = 0
         y = 0
         for col in gridValues:

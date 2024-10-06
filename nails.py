@@ -318,10 +318,15 @@ class App:
 
     def divide_data(self, keys = ['finger1', 'finger2','finger3','finger4','finger5']):
         fingers = []
+        timeline = None
         for key in keys:#repeat for every finger in keys
             first = True
             finger = np.array([])
             for idx, item in enumerate(self.current_data):
+                if timeline is None:
+                    timeline = np.array(int(item['timestamp']))
+                else:
+                    timeline = np.hstack((timeline, int(item['timestamp'])))
                 if item[key] != '':
                     #print(f' item = {item[key]}')
                     values = list(item[key][1:-1].split()) #remove [ and ]
@@ -383,12 +388,16 @@ class App:
             if fingers[i].size == 0:
                 continue
             self.plotR.plot(fingers[i][pos:, 0][:15], fingers[i][pos:, 2][:15], symbols[i])
+            print(f'shapre {fingers[i][pos:, 2][:15].shape} {fingers[i][:,0].shape}')
+
         self.plotR.grid(True)
+        self.plotR.legend(labels=['1','2','3','4','5'])
         self.plotR.legend(labels=['1','2','3','4','5'])
         self.plotR.set_ylim([0, 1])
         self.plotR.set_ylabel('dark          clear')
         l, r = self.plotR.get_xlim()
-        self.plotR.set_xlim(r-15, r)
+        startx = pos + self.maxtimeposition
+        self.plotR.set_xlim(startx, startx+15)
 
         for i in range(0, 5):
             if fingers[i].size == 0:
@@ -399,7 +408,7 @@ class App:
         self.plotG.set_ylim([0, 1])
         self.plotG.set_ylabel('dark          clear')
         l, r = self.plotG.get_xlim()
-        self.plotG.set_xlim(r-15, r)
+        self.plotR.set_xlim(startx, startx+15)
 
         for i in range(0, 5):
             if fingers[i].size == 0:
@@ -410,7 +419,7 @@ class App:
         self.plotB.set_ylim([0, 1])
         self.plotB.set_ylabel('dark          clear')
         l, r = self.plotB.get_xlim()
-        self.plotB.set_xlim(r-15, r)
+        self.plotR.set_xlim(startx, startx+15)
 
         self.histcanvas.draw_idle()
 
@@ -486,6 +495,7 @@ class App:
         # self.update_right_image(toshow)
 
         # frame2 = np.zeros(frame.shape, frame.dtype)
+        self.timeposition = -15
         self.append_data()
 
 
@@ -546,8 +556,9 @@ class App:
     def forward(self):
         self.timeposition += 5
         print(f'timeposition {self.timeposition}')
-        if self.timeposition >= 0:
-            self.timeposition -= 5
+        if self.timeposition >= -15:
+            self.timeposition = -15
+        print(f'real timeposition {self.timeposition}')
         self.refresh_data()
 
     def backward(self):
@@ -555,6 +566,7 @@ class App:
         print(f'timeposition {self.timeposition}/{self.maxtimeposition}')
         if self.timeposition < -self.maxtimeposition:
             self.timeposition = -self.maxtimeposition
+        print(f'real timeposition {self.timeposition}/{self.maxtimeposition}')
         self.refresh_data()
 
     #this function saves the image in current.jpg

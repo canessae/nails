@@ -10,7 +10,7 @@ User Manual for install and usage: https://github.com/canessae/nails/blob/main/N
 #### NAILS GUI
 
 <picture>
-  <img alt="NAILS GUI" src="" width="182">
+  <img alt="NAILS GUI" src="https://github.com/canessae/nails/blob/main/GraphicalAbstract.png" width="550">
 </picture>
 
 ##

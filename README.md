@@ -11,7 +11,7 @@ Read User Manual for install and usage: https://github.com/canessae/nails/blob/m
 If this software (including any part of it) is useful for you, please cite
 
 ```bibtex
-@misc{altiro3D:
+@misc{
   title = {{NAILS: Normalized Artificial Intelligence Labeling Sensor for Self-Care Health}},
   author = {L. Tenze, E. Canessa},
   journal = {Sensors 2024, 24(24), 7997},
